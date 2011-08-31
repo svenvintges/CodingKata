@@ -82,7 +82,7 @@ public class SalesBasketTest {
         basket.addBook("Book4");
         basket.addBook("Book5");
 
-        assertEquals("52.20 EU", basket.getTotalPrice());
+        assertEquals("51.20 EU", basket.getTotalPrice());
     }
 }
 
