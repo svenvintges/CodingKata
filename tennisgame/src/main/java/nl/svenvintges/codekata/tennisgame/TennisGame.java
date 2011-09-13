@@ -10,46 +10,48 @@ package nl.svenvintges.codekata.tennisgame;
  */
 public class TennisGame {
 
-    int scorePlayer1 = 0, scorePlayer2 = 0;
-    String player1 = "";
-    String player2 = "";
+    private static final int SCORE_NEEDED_TO_WIN_THE_GAME = 3;
+    private static final int SCORE_LOVE = 0;
+    private static final int SCORE_FIFTEEN = 1;
+    private static final int SCORE_THIRTY = 2;
+    private static final int SCORE_FORTY = 3;
+    private int scorePlayer1 = 0, scorePlayer2 = 0;
+    private String namePlayer1 = "";
+    private String namePlayer2 = "";
 
 
-    public TennisGame(String player1, String player2) {
-        this.player1 = player1;
-        this.player2 = player2;
+    public TennisGame(String nameOfPlayer1, String nameOfPlayer2) {
+        this.namePlayer1 = nameOfPlayer1;
+        this.namePlayer2 = nameOfPlayer2;
     }
 
-    public String getScore() {
-        String scorePlayer1Text = "", scorePlayer2Text = "";
 
-        if (scorePlayer1 == 0 && scorePlayer2 == 0) {
-            return "Love all";
-        }
+    //TODO Refactoring is needed to lower the cyclomatic complexity.
+    public final String getScoreAsTextualRepresentation() {
+        String scorePlayer1Text, scorePlayer2Text;
+        scorePlayer1Text = translateScoreToTextualRepresentation(scorePlayer1);
+        scorePlayer2Text = translateScoreToTextualRepresentation(scorePlayer2);
 
-        scorePlayer1Text = translateScore(scorePlayer1);
-        scorePlayer2Text = translateScore(scorePlayer2);
-
-        if (scorePlayer1 == scorePlayer2) {
-            if (scorePlayer1 > 2) {
+        if (gameIsTie()) {
+            if (scoreIsFourtyOrHigher()) {
                 return "Deuce";
             }
             return scorePlayer1Text + " all";
         }
 
-        if (scorePlayer1 > 3) {
-            if (scorePlayer1 - scorePlayer2 > 1) {
-                return player1 + " wins";
-            } else if (scorePlayer1 - scorePlayer2 == 1) {
-                return "Advantage " + player1;
+        if (playerOneHasEnoughPointsToWin()) {
+            if (scoreDifferenceIsMoreThenOne() && player1HasMorePointsThanPlayer2()) {
+                return namePlayer1 + " wins";
+            } else if (playerOneHasAdvantage()) {
+                return "Advantage " + namePlayer1;
             }
         }
 
-        if (scorePlayer2 > 3) {
-            if (scorePlayer2 - scorePlayer1 > 1) {
-                return player2 + " wins";
-            } else if (scorePlayer2 - scorePlayer1 == 1) {
-                return "Advantage " + player2;
+        if (playerTwoHasEnoughPointsToWin()) {
+            if (scoreDifferenceIsMoreThenOne() && player2HasMorePointsThanPlayer1()) {
+                return namePlayer2 + " wins";
+            } else if (playerTwoHasAdvantage()) {
+                return "Advantage " + namePlayer2;
             }
         }
 
@@ -57,15 +59,53 @@ public class TennisGame {
         return scorePlayer1Text + "," + scorePlayer2Text;
     }
 
-    private String translateScore(int score) {
+
+    private boolean player2HasMorePointsThanPlayer1() {
+        return scorePlayer2 > scorePlayer1;
+    }
+
+    private boolean player1HasMorePointsThanPlayer2() {
+        return scorePlayer1 > scorePlayer2;
+    }
+
+    private boolean playerOneHasAdvantage() {
+        return scorePlayer1 - scorePlayer2 == 1;
+    }
+
+    private boolean playerTwoHasAdvantage() {
+        return scorePlayer2 - scorePlayer1 == 1;
+    }
+
+    private boolean scoreDifferenceIsMoreThenOne() {
+        return Math.abs(scorePlayer1 - scorePlayer2) > 1;
+    }
+
+    private boolean playerOneHasEnoughPointsToWin() {
+        return scorePlayer1 > SCORE_NEEDED_TO_WIN_THE_GAME;
+    }
+
+    private boolean playerTwoHasEnoughPointsToWin() {
+        return scorePlayer2 > SCORE_NEEDED_TO_WIN_THE_GAME;
+    }
+
+    private boolean scoreIsFourtyOrHigher() {
+        return scorePlayer1 > SCORE_THIRTY;
+    }
+
+    private boolean gameIsTie() {
+        return scorePlayer1 == scorePlayer2;
+    }
+
+
+    private String translateScoreToTextualRepresentation(int score) {
         switch (score) {
-            case 0:
+            case SCORE_LOVE:
                 return "Love";
-            case 1:
+            case SCORE_FIFTEEN:
                 return "Fifteen";
-            case 2:
+            case SCORE_THIRTY:
                 return "Thirty";
-            case 3:
+            case SCORE_FORTY:
                 return "Forty";
             default:
                 return "";
@@ -73,11 +113,11 @@ public class TennisGame {
     }
 
 
-    public void playerOneScores() {
+    public final void playerOneScores() {
         scorePlayer1++;
     }
 
-    public void playerTwoScores() {
+    public final void playerTwoScores() {
         scorePlayer2++;
     }
 }
